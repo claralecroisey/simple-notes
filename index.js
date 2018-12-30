@@ -1,6 +1,7 @@
-const list = document.querySelector("#notes-list");
+const list = document.querySelector('#notes-list');
 const container = document.querySelector('.container');
-const form = document.querySelector("#notes-form");
+const form = document.querySelector('#notes-form');
+const alert = document.querySelector('.alert');
 const titleInput = document.querySelector('#title');
 const textInput = document.querySelector('#text');
 const notesList = document.querySelector('#notes-list');
@@ -67,7 +68,7 @@ class UI {
     container.insertBefore(div, form);
 
     // Vanish in 3 seconds
-    setTimeout(() => document.querySelector('.alert').remove(), 3000);
+    setTimeout(() => alert.remove(), 3000);
   }
 }
 
@@ -80,8 +81,7 @@ class Dbh {
       let request = window.indexedDB.open('notes', 1);
 
       request.onerror = function() {
-        console.log('Database failed to open');
-        reject();
+        reject('Database failed to open');
       };
 
       request.onsuccess = function() {
@@ -122,8 +122,7 @@ class NotesStore {
       // Resolves/rejects once transaction is over
       transaction.oncomplete = resolve;
       transaction.onerror = function() {
-        console.log('Transaction not opened due to error');
-        reject();
+        reject('Transaction not opened due to error');
       };
     });
   }
@@ -140,8 +139,7 @@ class NotesStore {
       // Resolves/rejects once transaction is over
       transaction.oncomplete = resolve;
       transaction.onerror = function() {
-        console.log('Transaction not opened due to error');
-        reject();
+        reject('Transaction not opened due to error');
       };
     });
   }
@@ -149,7 +147,7 @@ class NotesStore {
 
 function init() {
   Dbh.open().then(UI.displayNotes)
-    .catch((err) => console.log(err));
+    .catch((err) => console.error(err));
 }
 
 function handleAddNote(e) {
@@ -171,7 +169,7 @@ function handleAddNote(e) {
   NotesStore.addNote(note)
     .then(UI.clearFormFields)
     .then(UI.displayNotes)
-    .catch((err) => console.log('bouh'));
+    .catch((err) => console.error(err));
 }
 
 function handleDeleteNote(e) {
@@ -181,7 +179,7 @@ function handleDeleteNote(e) {
   // Delete note from store then display updated store content
   NotesStore.deleteNote(noteId)
     .then(UI.displayNotes)
-    .catch((err) => console.log('uh oh..'));
+    .catch((err) => console.error(err));
 }
 
 // On Content Loaded
