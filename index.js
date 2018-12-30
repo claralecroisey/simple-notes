@@ -1,4 +1,5 @@
 const list = document.querySelector("#notes-list");
+const container = document.querySelector('.container');
 const form = document.querySelector("#notes-form");
 const titleInput = document.querySelector('#title');
 const textInput = document.querySelector('#text');
@@ -32,7 +33,7 @@ class UI {
         const title = cursor.value.title;
         const text = cursor.value.text;
         const nodeId = cursor.value.id;
-        
+
         const note = new Note(title, text);
         UI.addNoteToList(note, nodeId);
 
@@ -57,6 +58,16 @@ class UI {
   static clearFormFields() {
     titleInput.value = '';
     textInput.value = '';
+  }
+
+  static showAlert(message, className) {
+    const div = document.createElement('div');
+    div.className = `alert alert-${className}`;
+    div.appendChild(document.createTextNode(message));
+    container.insertBefore(div, form);
+
+    // Vanish in 3 seconds
+    setTimeout(() => document.querySelector('.alert').remove(), 3000);
   }
 }
 
@@ -114,7 +125,7 @@ class NotesStore {
         console.log('Transaction not opened due to error');
         reject();
       };
-    }); 
+    });
   }
 
   static deleteNote(noteId) {
@@ -148,6 +159,12 @@ function handleAddNote(e) {
   // Get form values
   const titleValue = titleInput.value;
   const textValue = textInput.value;
+
+  // Validation
+  if (!titleValue || !textValue) {
+    return UI.showAlert('Please fill all the fields', 'danger');
+  }
+
   const note = new Note(titleValue, textValue);
 
   // Add new note to store then display updated store content
